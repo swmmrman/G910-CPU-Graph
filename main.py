@@ -24,7 +24,7 @@ def get_color(percent):
 while True:
     cpu = psutil.cpu_percent(interval=.1, percpu=True)
     key_string = "\\n"
-    for core,percent in enumerate(cpu):
+    for core, percent in enumerate(cpu):
         key_string += F"k {KEYS[core]} {get_color(percent):02x}0000\\n"
     key_string = F"echo -e '{key_string}c'"
     subprocess.call(F"{key_string} | g910-led -pp", shell=True)
