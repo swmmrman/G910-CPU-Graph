@@ -1,5 +1,8 @@
 import psutil
 import subprocess
+import setproctitle
+
+setproctitle.setproctitle("G910-CPU-Graph")
 
 BACKGROUND = "562500"
 START_COLOR = "210000"
