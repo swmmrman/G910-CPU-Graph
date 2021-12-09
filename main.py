@@ -1,9 +1,23 @@
 import psutil
 import subprocess
 import setproctitle
+import signal
 
 setproctitle.setproctitle("G910-CPU-Graph")
 
+
+def stop(signal, frame):
+    print("\rGood Bye")
+    global RUNNING
+    RUNNING = False
+
+
+signal.signal(signal.SIGABRT, stop)
+signal.signal(signal.SIGTERM, stop)
+signal.signal(signal.SIGHUP, stop)
+signal.signal(signal.SIGINT, stop)
+
+RUNNING = True
 BACKGROUND = "562500"
 START_COLOR = "210000"
 KEYS = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'num0', 'num1', 'num2',
@@ -21,13 +35,15 @@ ret = subprocess.call(F"{init_string} | g910-led -pp", shell=True)  # ", shell=T
 
 
 def get_color(percent):
-    return round(percent/100) * 255
+    return round(percent/100 * 255)
 
 
-while True:
+while RUNNING:
     cpu = psutil.cpu_percent(interval=.1, percpu=True)
     key_string = "\\n"
     for core, percent in enumerate(cpu):
         key_string += F"k {KEYS[core]} {get_color(percent):02x}0000\\n"
     key_string = F"echo -e '{key_string}c'"
     subprocess.call(F"{key_string} | g910-led -pp", shell=True)
+else:
+    subprocess.call(F"g910-led -a {BACKGROUND}", shell=True)
