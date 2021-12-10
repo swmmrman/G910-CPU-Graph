@@ -1,3 +1,4 @@
+#!/usr/bin/python3
 import psutil
 import subprocess
 import setproctitle
@@ -35,14 +36,15 @@ ret = subprocess.call(F"{init_string} | g910-led -pp", shell=True)  # ", shell=T
 
 
 def get_color(percent):
-    return round(percent/100 * 255)
+    frac = percent / 100
+    return F"{round(frac * 255):02x}{(255 - round(frac * 255)):02x}00"
 
 
 while RUNNING:
     cpu = psutil.cpu_percent(interval=.1, percpu=True)
     key_string = "\\n"
     for core, percent in enumerate(cpu):
-        key_string += F"k {KEYS[core]} {get_color(percent):02x}0000\\n"
+        key_string += F"k {KEYS[core]} {get_color(percent)}\\n"
     key_string = F"echo -e '{key_string}c'"
     subprocess.call(F"{key_string} | g910-led -pp", shell=True)
 else:
