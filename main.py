@@ -37,11 +37,11 @@ ret = subprocess.call(F"{init_string} | g910-led -pp", shell=True)  # ", shell=T
 
 def get_color(percent):
     frac = percent / 100
-    return F"{round(frac * 255):02x}{(255 - round(frac * 255)):02x}00"
+    return F"{round(frac * 255):02x}{(110 - round(frac * 110)):02x}00"
 
 
 while RUNNING:
-    cpu = psutil.cpu_percent(interval=.1, percpu=True)
+    cpu = psutil.cpu_percent(interval=0.05, percpu=True)
     temp = int(open('/sys/class/thermal/thermal_zone2/temp').readline())/1000
     key_string = "\\n"
     for core, percent in enumerate(cpu):
