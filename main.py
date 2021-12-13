@@ -42,9 +42,11 @@ def get_color(percent):
 
 while RUNNING:
     cpu = psutil.cpu_percent(interval=.1, percpu=True)
+    temp = int(open('/sys/class/thermal/thermal_zone2/temp').readline())/1000
     key_string = "\\n"
     for core, percent in enumerate(cpu):
         key_string += F"k {KEYS[core]} {get_color(percent)}\\n"
+    key_string += F"g logo {get_color(temp)}\\n"
     key_string = F"echo -e '{key_string}c'"
     subprocess.call(F"{key_string} | g910-led -pp", shell=True)
 else:
