@@ -3,6 +3,7 @@ import psutil
 import subprocess
 import setproctitle
 import signal
+import os
 
 setproctitle.setproctitle("G910-CPU-Graph")
 
@@ -40,9 +41,15 @@ def get_color(percent):
     return F"{round(frac * 255):02x}{(110 - round(frac * 110)):02x}00"
 
 
+cpu_sensor = ""
+sensors = os.listdir('/sys/class/thermal/')
+for sensor in sensors:
+    line = open(F'/sys/class/thermal/{sensor}/type').readline()
+    if line.strip() == "x86_pkg_temp":
+        cpu_sensor = F'/sys/class/thermal/{sensor}/temp'
 while RUNNING:
     cpu = psutil.cpu_percent(interval=0.05, percpu=True)
-    temp = int(open('/sys/class/thermal/thermal_zone2/temp').readline())/1000
+    temp = int(open(cpu_sensor).readline())/1000
     key_string = "\\n"
     for core, percent in enumerate(cpu):
         key_string += F"k {KEYS[core]} {get_color(percent)}\\n"
